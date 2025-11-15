@@ -39,8 +39,8 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # 构建项目
 echo "=== 构建项目 ==="
-# 使用完整的.NET 10路径避免PATH问题
-if /root/.dotnet/dotnet build --configuration Release "$PROJECT_ROOT"; then
+# 使用环境变量中的dotnet命令
+if dotnet build --configuration Release "$PROJECT_ROOT"; then
     echo "✓ 构建成功"
 else
     echo "✗ 构建失败"
@@ -49,7 +49,7 @@ fi
 
 # 测试1: DNX 模式 (dotnet run)
 echo "=== 测试 DNX 模式 ==="
-if /root/.dotnet/dotnet run --project "$PROJECT_ROOT/src/AnimeOrganizer.csproj" -- --source="$SOURCE_DIR" --target="$TARGET_DIR" --mode=copy; then
+if dotnet run --project "$PROJECT_ROOT/src/AnimeOrganizer.csproj" -- --source="$SOURCE_DIR" --target="$TARGET_DIR" --mode=copy; then
     echo "✓ DNX 模式测试通过"
 else
     echo "✗ DNX 模式测试失败"
@@ -78,7 +78,7 @@ done
 echo "=== 测试命令行参数 ==="
 
 # 测试帮助
-HELP_RESULT=$(/root/.dotnet/dotnet run --project "$PROJECT_ROOT/src/AnimeOrganizer.csproj" -- --help)
+HELP_RESULT=$(dotnet run --project "$PROJECT_ROOT/src/AnimeOrganizer.csproj" -- --help)
 if echo "$HELP_RESULT" | grep -q "用法:"; then
     echo "✓ 帮助命令测试通过"
 else
@@ -86,7 +86,7 @@ else
 fi
 
 # 测试版本
-VERSION_RESULT=$(/root/.dotnet/dotnet run --project "$PROJECT_ROOT/src/AnimeOrganizer.csproj" -- --version)
+VERSION_RESULT=$(dotnet run --project "$PROJECT_ROOT/src/AnimeOrganizer.csproj" -- --version)
 if echo "$VERSION_RESULT" | grep -q "AnimeOrganizer.NET v"; then
     echo "✓ 版本命令测试通过"
 else
@@ -97,7 +97,7 @@ fi
 echo "=== 测试全局工具模式 ==="
 
 # 尝试打包为工具
-if /root/.dotnet/dotnet pack "$PROJECT_ROOT/src/AnimeOrganizer.csproj" --configuration Release --output "$TEST_DIR/nupkg" -p:PackAsTool=true; then
+if dotnet pack "$PROJECT_ROOT/src/AnimeOrganizer.csproj" --configuration Release --output "$TEST_DIR/nupkg" -p:PackAsTool=true; then
     echo "✓ 工具包创建成功"
     
     # 尝试本地安装工具进行测试
@@ -132,7 +132,7 @@ case "$OS" in
 esac
 
 # 发布单文件
-if /root/.dotnet/dotnet publish "$PROJECT_ROOT/src/AnimeOrganizer.csproj" --configuration Release --runtime "$RID" --self-contained true --output "$TEST_DIR/publish"; then
+if dotnet publish "$PROJECT_ROOT/src/AnimeOrganizer.csproj" --configuration Release --runtime "$RID" --self-contained true --output "$TEST_DIR/publish"; then
     echo "✓ 单文件发布成功"
     
     BINARY_PATH="$TEST_DIR/publish/aniorg"

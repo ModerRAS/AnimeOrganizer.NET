@@ -23,7 +23,8 @@ $testFiles = @(
 
 foreach ($file in $testFiles) {
     $filePath = Join-Path $sourceDir $file
-    "测试内容 for $file" | Out-File -FilePath $filePath -Encoding UTF8
+    # 使用LiteralPath避免通配符解析问题
+    "测试内容 for $file" | Out-File -LiteralPath $filePath -Encoding UTF8
 }
 
 Write-Host "✓ 测试文件创建完成" -ForegroundColor Green
