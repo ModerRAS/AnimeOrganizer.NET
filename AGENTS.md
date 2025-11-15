@@ -75,12 +75,17 @@ gh run watch <run-id>
 ### 常见错误及解决方案
 
 #### NETSDK1047错误
-**错误信息**: `Assets file doesn't have a target for 'net9.0/linux-x64'`
+**错误信息**: `Assets file doesn't have a target for 'net9.0/linux-x64'` 或 `net9.0/osx-arm64`
 **原因**: 项目文件缺少RuntimeIdentifiers配置
-**解决方案**: 在项目文件的PropertyGroup中添加RuntimeIdentifiers
+**解决方案**: 在项目文件的PropertyGroup中添加完整的RuntimeIdentifiers
 ```xml
-<RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
+<RuntimeIdentifiers>win-x64;linux-x64;osx-x64;osx-arm64</RuntimeIdentifiers>
 ```
+
+#### Windows构建取消错误
+**错误信息**: `The operation was canceled` (Windows平台)
+**原因**: .NET SDK安装超时或被取消
+**解决方案**: 通常是由于网络问题，重新运行即可
 
 #### 构建环境错误
 **错误信息**: 与.NET SDK版本相关的错误
