@@ -299,6 +299,12 @@ public class Program
             return;
         }
 
+        if (args[0] == "--version" || args[0] == "-v")
+        {
+            Console.WriteLine("AnimeOrganizer.NET v1.0.0");
+            return;
+        }
+
         try
         {
             var options = ParseArguments(args);
@@ -345,19 +351,40 @@ public class Program
             Verbose = false
         };
 
-        foreach (var arg in args)
+        for (int i = 0; i < args.Length; i++)
         {
+            var arg = args[i];
+            
             if (arg.StartsWith("--source="))
             {
                 options.Source = arg.Substring("--source=".Length);
+            }
+            else if (arg == "--source" && i + 1 < args.Length)
+            {
+                options.Source = args[++i];
             }
             else if (arg.StartsWith("--target="))
             {
                 options.Target = arg.Substring("--target=".Length);
             }
+            else if (arg == "--target" && i + 1 < args.Length)
+            {
+                options.Target = args[++i];
+            }
             else if (arg.StartsWith("--mode="))
             {
                 var modeStr = arg.Substring("--mode=".Length).ToLower();
+                options.Mode = modeStr switch
+                {
+                    "move" => OperationMode.Move,
+                    "copy" => OperationMode.Copy,
+                    "link" => OperationMode.Link,
+                    _ => throw new ArgumentException($"无效的操作模式: {modeStr}")
+                };
+            }
+            else if (arg == "--mode" && i + 1 < args.Length)
+            {
+                var modeStr = args[++i].ToLower();
                 options.Mode = modeStr switch
                 {
                     "move" => OperationMode.Move,
@@ -373,6 +400,15 @@ public class Program
             else if (arg.StartsWith("--include-ext="))
             {
                 var extStr = arg.Substring("--include-ext=".Length);
+                options.IncludeExt = new HashSet<string>(
+                    extStr.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                          .Select(ext => ext.StartsWith('.') ? ext : $".{ext}"),
+                    StringComparer.OrdinalIgnoreCase
+                );
+            }
+            else if (arg == "--include-ext" && i + 1 < args.Length)
+            {
+                var extStr = args[++i];
                 options.IncludeExt = new HashSet<string>(
                     extStr.Split(',', StringSplitOptions.RemoveEmptyEntries)
                           .Select(ext => ext.StartsWith('.') ? ext : $".{ext}"),

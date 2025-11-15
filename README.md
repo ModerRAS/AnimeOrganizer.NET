@@ -168,7 +168,7 @@ aniorg --source="/path/to/downloads"
 
 ### 环境要求
 
-- .NET 9.0 SDK
+- .NET 10.0 SDK
 - Git
 
 ### 本地构建

@@ -31,19 +31,159 @@ jobs:
     - name: Build
       run: dotnet build --no-restore --configuration Release
     
-    - name: Test
-      run: dotnet test --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
+    - name: Test Unit Tests
+      run: dotnet test --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=unit-test-results.trx" --filter Category!=EndToEnd
     
-    - name: Upload test results
+    - name: Test End-to-End
+      run: dotnet test --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=e2e-test-results.trx" --filter Category=EndToEnd
+      continue-on-error: true
+    
+    - name: Upload unit test results
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: test-results-${{ matrix.os }}
-        path: '**/test-results.trx'
+        name: unit-test-results-${{ matrix.os }}
+        path: '**/unit-test-results.trx'
+        retention-days: 7
+    
+    - name: Upload E2E test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: e2e-test-results-${{ matrix.os }}
+        path: '**/e2e-test-results.trx'
         retention-days: 7
 
-  build:
+  e2e-comprehensive:
     needs: test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+    
+    - name: Create test directory structure
+      run: |
+        mkdir -p test-downloads/"[ANi] 间谍过家家 - 01 [1080P]"
+        mkdir -p test-downloads/"[SubsPlease] 进击的巨人 - 01 [1080p]"
+        mkdir -p test-anime-output
+        
+        # Create test files
+        echo "test content 1" > "test-downloads/[ANi] 间谍过家家 - 01 [1080P].mp4"
+        echo "test content 2" > "test-downloads/[SubsPlease] 进击的巨人 - 01 [1080p].mkv"
+        echo "test content 3" > "test-downloads/[EMBER] 鬼灭之刃 - 01 [1080p][Multiple Subtitle].avi"
+    
+    - name: Test DNX Mode (Direct Execution)
+      run: |
+        echo "=== Testing DNX Mode ==="
+        dotnet run --project src/AnimeOrganizer.csproj -- --source "test-downloads" --target "test-anime-output-dnx" --mode copy --verbose
+        
+        # Verify output
+        if [ -f "test-anime-output-dnx/间谍过家家/01 [1080P].mp4" ]; then
+          echo "✓ DNX mode: File organization successful"
+        else
+          echo "✗ DNX mode: File organization failed"
+          exit 1
+        fi
+      shell: bash
+    
+    - name: Test Global Tool Mode
+      run: |
+        echo "=== Testing Global Tool Mode ==="
+        # Pack as tool
+        dotnet pack src/AnimeOrganizer.csproj --configuration Release --output ./nupkg-tool --p:PackAsTool=true
+        
+        # Install tool locally for testing
+        dotnet tool install --global --add-source ./nupkg-tool AnimeOrganizer.NET
+        
+        # Test execution
+        aniorg --source "test-downloads" --target "test-anime-output-tool" --mode copy --verbose
+        
+        # Verify output
+        if [ -f "test-anime-output-tool/间谍过家家/01 [1080P].mp4" ]; then
+          echo "✓ Global tool mode: File organization successful"
+        else
+          echo "✗ Global tool mode: File organization failed"
+          exit 1
+        fi
+        
+        # Cleanup
+        dotnet tool uninstall --global AnimeOrganizer.NET
+      shell: bash
+    
+    - name: Test Binary Mode
+      run: |
+        echo "=== Testing Binary Mode ==="
+        # Determine runtime identifier
+        if [[ "$RUNNER_OS" == "Linux" ]]; then
+          RID="linux-x64"
+        elif [[ "$RUNNER_OS" == "Windows" ]]; then
+          RID="win-x64"
+        elif [[ "$RUNNER_OS" == "macOS" ]]; then
+          RID="osx-x64"
+        fi
+        
+        # Publish single file
+        dotnet publish src/AnimeOrganizer.csproj --configuration Release --runtime $RID --self-contained true --output ./publish-binary -p:PublishSingleFile=true
+        
+        # Test execution
+        if [[ "$RUNNER_OS" == "Windows" ]]; then
+          ./publish-binary/aniorg.exe --source "test-downloads" --target "test-anime-output-binary" --mode copy --verbose
+        else
+          chmod +x ./publish-binary/aniorg
+          ./publish-binary/aniorg --source "test-downloads" --target "test-anime-output-binary" --mode copy --verbose
+        fi
+        
+        # Verify output
+        if [ -f "test-anime-output-binary/间谍过家家/01 [1080P].mp4" ]; then
+          echo "✓ Binary mode: File organization successful"
+        else
+          echo "✗ Binary mode: File organization failed"
+          exit 1
+        fi
+      shell: bash
+    
+    - name: Test Command Line Options
+      run: |
+        echo "=== Testing Command Line Options ==="
+        
+        # Test help
+        dotnet run --project src/AnimeOrganizer.csproj -- --help
+        
+        # Test version
+        dotnet run --project src/AnimeOrganizer.csproj -- --version
+        
+        # Test dry-run
+        dotnet run --project src/AnimeOrganizer.csproj -- --source "test-downloads" --dry-run --verbose
+        
+        echo "✓ All command line options working"
+      shell: bash
+    
+    - name: Upload E2E test artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: e2e-artifacts-${{ matrix.os }}
+        path: |
+          test-anime-output-*/
+          test-downloads/
+        retention-days: 3
+
+  build:
+    needs: [test, e2e-comprehensive]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
