@@ -9,7 +9,6 @@ on:
 
 env:
   DOTNET_VERSION: '10.0.x'
-  NUGET_KEY: ${{ secrets.NUGET_KEY }}
 
 jobs:
   test:
@@ -153,7 +152,7 @@ jobs:
     - name: Publish to NuGet
       run: |
         dotnet nuget push ./nupkg/*.nupkg \
-          --api-key ${{ env.NUGET_KEY }} \
+          --api-key ${{ secrets.NUGET_KEY }} \
           --source https://api.nuget.org/v3/index.json \
           --skip-duplicate
     
