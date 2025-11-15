@@ -44,6 +44,54 @@
 - 集成测试验证端到端场景
 - 跨平台兼容性验证
 
+## GitHub Actions监控
+
+### 查看运行状态
+使用GitHub CLI查看Actions执行情况：
+```bash
+# 查看最近的运行记录
+gh run list --limit 10
+
+# 查看特定运行的详细日志
+gh run view <run-id> --log
+
+# 查看实时日志
+gh run watch <run-id>
+```
+
+### 常见状态
+- ✅ **completed** - 运行完成
+- ❌ **failure** - 运行失败
+- 🔄 **in_progress** - 正在运行
+- ⏸️ **queued** - 排队等待
+
+### 故障排查
+当Actions失败时：
+1. 查看运行日志找出错误信息
+2. 检查失败的具体步骤
+3. 验证配置文件语法
+4. 确认环境变量和密钥设置
+
+### 常见错误及解决方案
+
+#### NETSDK1047错误
+**错误信息**: `Assets file doesn't have a target for 'net9.0/linux-x64'`
+**原因**: 项目文件缺少RuntimeIdentifiers配置
+**解决方案**: 在项目文件的PropertyGroup中添加RuntimeIdentifiers
+```xml
+<RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
+```
+
+#### 构建环境错误
+**错误信息**: 与.NET SDK版本相关的错误
+**原因**: 构建环境.NET版本不匹配
+**解决方案**: 确保GitHub Actions中的dotnet-version与项目目标框架一致
+
+#### 分支触发错误
+**错误信息**: Workflow未触发
+**原因**: 分支名称配置错误
+**解决方案**: 检查workflow文件中的分支名称是否与实际分支一致
+
 ## 完成状态
 
 ✅ 核心功能实现
