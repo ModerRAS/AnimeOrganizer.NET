@@ -247,7 +247,14 @@ gh run watch <run-id>
 **关键发现**：GitHub Secrets不会自动成为环境变量！\
 **错误用法**：`env.NUGET_KEY: ${{ secrets.NUGET_KEY }}` + `${{ env.NUGET_KEY }}`\
 **正确用法**：直接使用 `${{ secrets.NUGET_KEY }}`\
-**原因**：Secrets需要通过`secrets`上下文直接访问，而不是通过`env`上下文
+**原因**：Secrets需要通过`secrets`上下文直接访问，而不是通过`env`上下文\
+\
+**验证结果**：\
+- 修复后的语法：`${{ secrets.NUGET_KEY }}` ✅\
+- 但仍然显示空值：`--api-key  ` ⚠️\
+- 根本原因：GitHub Secrets中的NUGET_KEY可能未设置或值为空\
+\
+**下一步**：需要在GitHub仓库设置中验证NUGET_KEY的存在和值
 
 ## DNX 功能测试记录
 
