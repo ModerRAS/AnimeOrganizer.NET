@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>aniorg</AssemblyName>
@@ -21,7 +21,7 @@
     <PackageProjectUrl>https://github.com/ModerRAS/AnimeOrganizer.NET</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ModerRAS/AnimeOrganizer.NET.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageLicenseExpression>AGPL-3.0</PackageLicenseExpression>
+    <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Copyright>Copyright (c) 2025 ModerRAS</Copyright>
   </PropertyGroup>
@@ -42,7 +42,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

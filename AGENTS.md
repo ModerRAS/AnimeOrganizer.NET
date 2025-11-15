@@ -44,6 +44,61 @@
 - 集成测试验证端到端场景
 - 跨平台兼容性验证
 
+## .NET 10 升级
+
+### 升级过程
+1. **目标框架升级**: 将项目从 `net9.0` 升级到 `net10.0`
+2. **GitHub Actions更新**: 更新workflow中的dotnet-version为 `10.0.x`
+3. **许可证修正**: 修正AGPL-3.0为AGPL-3.0-or-later以符合SPDX标准
+4. **路径修复**: 修复README.md文件路径引用
+
+### 安装.NET 10
+```bash
+# 使用微软安装脚本
+curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 10.0
+
+# 设置环境变量
+export DOTNET_ROOT="/root/.dotnet"
+export PATH="$PATH:/root/.dotnet/tools"
+```
+
+## DNX (.NET CLI工具) 测试
+
+### 工具安装
+```bash
+# 构建NuGet包
+dotnet pack --configuration Release -p:PackAsTool=true
+
+# 安装为全局工具
+dotnet tool install --global --add-source ./nupkg AnimeOrganizer.NET
+
+# 设置环境变量（如果需要）
+export DOTNET_ROOT="/root/.dotnet"
+export PATH="$PATH:/root/.dotnet/tools"
+```
+
+### 功能测试
+```bash
+# 基本功能测试
+aniorg --help
+
+# 文件整理测试
+aniorg --source="/path/to/downloads" --mode=copy --target="/path/to/anime"
+
+# 硬链接测试
+aniorg --source="/path/to/downloads" --mode=link --target="/path/to/anime"
+
+# 预览模式
+aniorg --source="/path/to/downloads" --dry-run --verbose
+```
+
+### 验证结果
+- ✅ 工具安装成功
+- ✅ 基本功能正常
+- ✅ 文件整理功能正常
+- ✅ 硬链接功能正常（inode一致性验证）
+- ✅ 跨平台支持（Linux x64测试通过）
+
 ## GitHub Actions监控
 
 ### 查看运行状态
