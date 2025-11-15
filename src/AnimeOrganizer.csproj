@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>aniorg</AssemblyName>
+    <Product>AnimeOrganizer.NET</Product>
+    <Version>1.0.0</Version>
+    <Authors>ModerRAS</Authors>
+    <Description>轻量级跨平台命令行动漫文件整理工具</Description>
+    
+    <!-- NuGet包配置 -->
+    <PackageId>AnimeOrganizer.NET</PackageId>
+    <PackageVersion>1.0.0</PackageVersion>
+    <PackageDescription>轻量级跨平台命令行动漫文件整理工具，支持智能解析、硬链接、批量整理</PackageDescription>
+    <PackageReleaseNotes>首次发布，支持基本文件整理功能</PackageReleaseNotes>
+    <PackageTags>anime;organizer;file;tool;cli;cross-platform</PackageTags>
+    <PackageProjectUrl>https://github.com/ModerRAS/AnimeOrganizer.NET</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ModerRAS/AnimeOrganizer.NET.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Copyright>Copyright (c) 2025 ModerRAS</Copyright>
+  </PropertyGroup>
+
+  <!-- 发布配置 -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release' and '$(PackAsTool)' != 'true'">
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
+  </PropertyGroup>
+
+  <!-- NuGet工具包配置 -->
+  <PropertyGroup Condition="'$(PackAsTool)' == 'true'">
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>aniorg</ToolCommandName>
+    <PackageOutputPath>./nupkg</PackageOutputPath>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>
