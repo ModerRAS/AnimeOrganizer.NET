@@ -90,15 +90,24 @@ gh run watch <run-id>
 #### PowerShell语法错误
 **错误信息**: `Missing expression after unary operator '--'`
 **原因**: GitHub Actions中的PowerShell脚本使用了Unix风格的续行符`\`
-**解决方案**: 在Windows平台的PowerShell脚本中使用反引号` ` `作为续行符
+**解决方案**: 在Windows平台的PowerShell脚本中使用反引号` ` `作为续行符，或者使用平台条件分别处理
 ```yaml
-# 错误（Unix风格）
-dotnet publish xxx \
-  --configuration Release \
+# 推荐：使用平台条件分别处理
+- name: Publish (Unix)
+  if: matrix.os != 'windows-latest'
+  run: |
+    dotnet publish xxx \
+      --configuration Release \
 
-# 正确（PowerShell风格）  
-dotnet publish xxx `
-  --configuration Release `
+- name: Publish (Windows)  
+  if: matrix.os == 'windows-latest'
+  run: |
+    dotnet publish xxx `
+      --configuration Release `
+
+# 或者：使用平台无关的一行命令
+- name: Publish
+  run: dotnet publish xxx --configuration Release --runtime xxx
 ```
 
 #### 构建环境错误
