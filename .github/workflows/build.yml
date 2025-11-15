@@ -75,13 +75,13 @@ jobs:
     
     - name: Publish
       run: |
-        dotnet publish src/AnimeOrganizer.csproj \
-          --configuration Release \
-          --runtime ${{ matrix.rid }} \
-          --self-contained true \
-          --output ./publish/${{ matrix.rid }} \
-          -p:PublishSingleFile=true \
-          -p:IncludeNativeLibrariesForSelfExtract=true \
+        dotnet publish src/AnimeOrganizer.csproj `
+          --configuration Release `
+          --runtime ${{ matrix.rid }} `
+          --self-contained true `
+          --output ./publish/${{ matrix.rid }} `
+          -p:PublishSingleFile=true `
+          -p:IncludeNativeLibrariesForSelfExtract=true `
           -p:PackAsTool=false
     
     - name: Create archive (Unix)

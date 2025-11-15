@@ -87,6 +87,20 @@ gh run watch <run-id>
 **原因**: .NET SDK安装超时或被取消
 **解决方案**: 通常是由于网络问题，重新运行即可
 
+#### PowerShell语法错误
+**错误信息**: `Missing expression after unary operator '--'`
+**原因**: GitHub Actions中的PowerShell脚本使用了Unix风格的续行符`\`
+**解决方案**: 在Windows平台的PowerShell脚本中使用反引号` ` `作为续行符
+```yaml
+# 错误（Unix风格）
+dotnet publish xxx \
+  --configuration Release \
+
+# 正确（PowerShell风格）  
+dotnet publish xxx `
+  --configuration Release `
+```
+
 #### 构建环境错误
 **错误信息**: 与.NET SDK版本相关的错误
 **原因**: 构建环境.NET版本不匹配
