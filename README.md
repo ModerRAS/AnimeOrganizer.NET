@@ -258,7 +258,7 @@ aniorg --source="/path/to/downloads" --verbose
 
 ## 📄 许可证
 
-MIT License - 详见 [LICENSE](LICENSE) 文件
+GNU Affero General Public License v3.0 (AGPL-3.0) - 详见 [LICENSE](LICENSE) 文件
 
 ## 🤝 贡献
 

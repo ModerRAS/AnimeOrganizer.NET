@@ -31,6 +31,7 @@
 - 采用单文件架构，核心逻辑在Program.cs中
 - 零第三方依赖，保持工具轻量级
 - 支持跨平台：Windows、Linux、macOS
+- 许可证：GNU Affero General Public License v3.0 (AGPL-3.0)
 
 ### 构建配置
 - 区分NuGet工具包和二进制发布
